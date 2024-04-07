@@ -12,6 +12,7 @@
   "rules": {
     // "prettier/prettier": "error",
     // "comma-dangle": ["error", "never"]
+    "@typescript-eslint/space-before-function-paren": "off"
   },
   "plugins": ["prettier"]
 }

@@ -1,8 +1,9 @@
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { PaperProvider } from "react-native-paper";
-import Home from "./src/pages/home";
-import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from 'expo-status-bar'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { PaperProvider } from 'react-native-paper'
+import Home from './src/pages/home'
+import * as SplashScreen from 'expo-splash-screen'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
   useFonts,
   Poppins_100Thin,
@@ -13,13 +14,13 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
   Poppins_800ExtraBold,
-  Poppins_900Black,
-} from "@expo-google-fonts/poppins";
-import { useCallback, useEffect, useState } from "react";
+  Poppins_900Black
+} from '@expo-google-fonts/poppins'
+import React, { useCallback, useEffect } from 'react'
 
-export default function App() {
+export default function App(): React.JSX.Element {
   // Load fonts
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Poppins_100Thin,
     Poppins_200ExtraLight,
     Poppins_300Light,
@@ -28,39 +29,41 @@ export default function App() {
     Poppins_600SemiBold,
     Poppins_700Bold,
     Poppins_800ExtraBold,
-    Poppins_900Black,
-  });
+    Poppins_900Black
+  })
 
   // Prevent splash screen from autohiding
   useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
+    async function prepare(): Promise<void> {
+      await SplashScreen.preventAutoHideAsync()
     }
-    prepare();
-  }, []);
+    void prepare()
+  }, [])
 
   // Hide splash screen after fonts are loaded
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+      await SplashScreen.hideAsync()
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded])
 
   // Verifica se as fontes foram carregadas
   if (!fontsLoaded) {
     // Se não carregou, retorna null
-    return null;
+    return null
   } else {
     // Se carregou, exibe a aplicação
     return (
-      <SafeAreaProvider>
-        <PaperProvider>
-          <StatusBar style="light" backgroundColor="#110982" />
-          <SafeAreaView onLayout={onLayoutRootView}>
-            <Home />
-          </SafeAreaView>
-        </PaperProvider>
-      </SafeAreaProvider>
-    );
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <PaperProvider>
+            <StatusBar style="light" backgroundColor="#110982" />
+            <SafeAreaView onLayout={onLayoutRootView}>
+              <Home />
+            </SafeAreaView>
+          </PaperProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    )
   }
 }
