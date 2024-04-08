@@ -7,73 +7,149 @@ import { RectButton } from 'react-native-gesture-handler'
 // import { TextInput } from 'react-native-paper'
 import TaskCard from '../../components/taskCard'
 import { useEffect, useState } from 'react'
+import NewTaskModal from '../../components/newTaskModal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from 'moment'
 
-interface TaskCardProps {
+interface TaskProps {
   id: number
   title: string
   description: string
   dateForEnd: Date
   completed: boolean
   priority: boolean
-  onPress: (id: number) => void
-  onToggleCheck: (id: number) => void
+}
+
+interface OrderProps {
+  type: 'date' | 'priority' | 'finished'
+  order: 'asc' | 'desc'
 }
 
 export default function Home(): React.JSX.Element {
   // estado que armazena as tasks
-  const [tasks, setTasks] = useState<TaskCardProps[]>([])
+  const [tasks, setTasks] = useState<TaskProps[]>([])
+  // estado que armazena a ordem
+  const [order, setOrder] = useState<OrderProps>({
+    type: 'date',
+    order: 'asc'
+  })
+  // estado p armazenar o filtro por completed
+  const [showCompleted, setShowCompleted] = useState<boolean>(false)
+  // estado para abrir e fechar o modal de nova tarefa
+  const [newTaskModaIsOpen, setNewTaskModalIsOpen] = useState<boolean>(false)
+  const [newTaskTitle, setNewTaskTitle] = useState<string>('')
 
-  // function handleToggleCheck() {
-  //   console.log('toggle')
-  // }
-
-  useEffect(() => {
-    setTasks([
-      {
-        id: 1,
-        title: 'Tarefa 1',
-        description: 'Descrição da tarefa 1',
-        dateForEnd: new Date(),
-        completed: false,
-        priority: false,
-        onToggleCheck: (id) => { console.log('toggle' + id) },
-        onPress: (id) => { console.log('pressed' + id) }
-      },
-      {
-        id: 2,
-        title: 'Tarefa 2',
-        description: 'Descrição da tarefa 2',
-        dateForEnd: new Date(),
-        completed: false,
-        priority: true,
-        onToggleCheck: (id) => { console.log('toggle' + id) },
-        onPress: (id) => { console.log('pressed' + id) }
-      },
-      {
-        id: 3,
-        title: 'Tarefa 3',
-        description: 'Descrição da tarefa 3',
-        dateForEnd: new Date(),
-        completed: false,
-        priority: false,
-        onToggleCheck: (id) => { console.log('toggle' + id) },
-        onPress: (id) => { console.log('pressed' + id) }
-      },
-      {
-        id: 4,
-        title: 'Tarefa 4',
-        description: 'Descrição da tarefa 4',
-        dateForEnd: new Date(),
-        completed: false,
-        priority: false,
-        onToggleCheck: (id) => { console.log('toggle' + id) },
-        onPress: (id) => {}
+  function handleToggleCheck(idTask: number): void {
+    // cria uma nova lista de tasks (conceito de imutabilidade)
+    const newTasks = tasks.map((task) => {
+      // verifica se a task atual é a task que foi clicada
+      if (task.id === idTask) {
+        // retorna a task com o completed invertido
+        return {
+          ...task,
+          completed: !task.completed
+        }
       }
-    ])
+      // retorna a task sem alterações
+      return task
+    }
+    )
+    // atualiza o estado de tasks com a nova lista
+    setTasks(newTasks)
+  }
+
+  // muda a ordenação das tasks entre data e prioridade maior e menor
+  function toggleOrder(): void {
+    // verifica se a ordenação atual é por data e se é ascendente
+    if (order.type === 'date' && order.order === 'asc') {
+      // atualiza o estado de order para data descendente
+      setOrder({
+        type: 'date',
+        order: 'desc'
+      })
+    } else if (order.type === 'date' && order.order === 'desc') {
+      // atualiza o estado de order para prioridade ascendente
+      setOrder({
+        type: 'priority',
+        order: 'asc'
+      })
+    } else if (order.type === 'priority' && order.order === 'asc') {
+      // atualiza o estado de order para prioridade descendente
+      setOrder({
+        type: 'priority',
+        order: 'desc'
+      })
+    } else {
+      // atualiza o estado de order para data ascendente
+      setOrder({
+        type: 'date',
+        order: 'asc'
+      })
+    }
+
+    // cria uma nova lista de tasks com a ordenação atual
+    const newTasks = tasks.sort((a, b) => {
+      // verifica se a ordenação é por data
+      if (order.type === 'date') {
+        // verifica se a ordenação é ascendente
+        if (order.order === 'asc') {
+          // retorna a diferença entre as datas, para ordenar de forma ascendente
+          return moment(a.dateForEnd).toDate().getTime() - moment(b?.dateForEnd).toDate().getTime()
+        } else {
+          // retorna a diferença entre as datas
+          return moment(b.dateForEnd).toDate().getTime() - moment(a.dateForEnd).toDate().getTime()
+        }
+      } else {
+        // verifica se a ordenação é ascendente
+        if (order.order === 'asc') {
+          // retorna a diferença entre as prioridades
+          return Number(a.priority) - Number(b.priority)
+        } else {
+          // retorna a diferença entre as prioridades
+          return Number(b.priority) - Number(a.priority)
+        }
+      }
+    })
+
+    // atualiza o estado de tasks com a nova lista
+    setTasks(newTasks)
+  }
+
+  // função para alterar filtro
+
+  // função que é chamada quando a página é carregada
+  useEffect(() => {
+    // busca as tasks atuais de storage
+    AsyncStorage.getItem('mtasks:tasks').then((tasksSaved) => {
+      // verifica se já existe tasks
+      if (tasksSaved !== null) {
+        // se existir, converte para array
+        const tasksArray = JSON.parse(tasksSaved)
+        // atualiza o estado de tasks com as tasks do storage
+        setTasks([...tasksArray])
+      }
+    }
+    ).catch((error) => {
+      console.error('error', error)
+    })
   }, [])
 
   return (
     <>
+      {/* modal de nova tarefa */}
+      <NewTaskModal
+        newTaskModaIsOpen={newTaskModaIsOpen}
+        onClose={() => {
+          setNewTaskModalIsOpen(!newTaskModaIsOpen)
+          setNewTaskTitle('')
+        }}
+        onCreated={(task) => {
+          setTasks([...tasks, task])
+          setNewTaskModalIsOpen(false)
+          setNewTaskTitle('')
+        }}
+        taskTitle={newTaskTitle}
+      />
       {/* importando header */}
       <Header />
 
@@ -84,9 +160,12 @@ export default function Home(): React.JSX.Element {
             style={styles.textInput}
             mode="outlined"
             label="Digite aqui para criar uma tarefa"
-            right={<TextInput.Icon icon={'send'} />}
-            // value={text}
-            // onChangeText={text => setText(text)}
+            right={<TextInput.Icon icon={'send'} onPress={() => { setNewTaskModalIsOpen(true) }} />}
+            value={newTaskTitle}
+            onChangeText={(text) => { setNewTaskTitle(text) }}
+            enterKeyHint='send'
+            onSubmitEditing={() => { setNewTaskModalIsOpen(true) }}
+
           />
         </View>
 
@@ -96,27 +175,37 @@ export default function Home(): React.JSX.Element {
           <RectButton
             style={styles.orderButton}
 
-            // onPress={() => { console.log('Pressed') }}
+            onPress={() => { toggleOrder() }}
           >
-            <Text style={styles.orderButtonText}>Ordenando por data</Text>
+            <Text style={styles.orderButtonText}>Ordenando por
+            {order.type === 'date' ? ' data' : ' prioridade'}
+            </Text>
             <IconIon
               style={styles.orderButtonIcon}
-              name="caret-down-outline"
+              name={order.order === 'asc' ? 'caret-up-outline' : 'caret-down-outline'}
               size={20}
               color="#595959"
             />
           </RectButton>
 
           {/* botão filtro */}
-          <View style={styles.filterButton}>
-            <Checkbox status="checked" />
+          <View style={styles.filterButton} onTouchEnd={() => { setShowCompleted(!showCompleted) }}>
+            <Checkbox status={showCompleted ? 'unchecked' : 'checked'} />
             <Text style={styles.filterButtonText}>Mostrar concluídas</Text>
           </View>
         </View>
         {/* container lista de tarefas */}
         <View style={styles.taskListContainer}>
-          {tasks.map((task) => {
-            return <TaskCard key={task.id} {...task} />
+          {tasks?.map((task) => {
+            // faz o filtro de tarefas concluídas
+            if (showCompleted && task.completed) {
+              return null
+            }
+            return (<TaskCard key={task.id} {...task} onToggleCheck={() => {
+              handleToggleCheck(task.id)
+            }}
+            onPress={() => {}}
+            />)
           })}
         </View>
       </View>

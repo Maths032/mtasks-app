@@ -28,7 +28,7 @@ export default function TaskCard({
       key={id}
       style={[
         styles.taskContainer,
-        { backgroundColor: priority ? '#f8d7da' : '#fff' }
+        { backgroundColor: completed ? '#d4edda' : priority ? '#f8d7da' : '#fff' }
       ]}
     >
       {/* container com checkbox */}

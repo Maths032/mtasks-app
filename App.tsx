@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { PaperProvider } from 'react-native-paper'
@@ -50,7 +51,7 @@ export default function App(): React.JSX.Element {
   // Verifica se as fontes foram carregadas
   if (!fontsLoaded) {
     // Se não carregou, retorna null
-    return null
+    return <></>
   } else {
     // Se carregou, exibe a aplicação
     return (
