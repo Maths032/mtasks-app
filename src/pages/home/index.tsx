@@ -3,7 +3,7 @@ import Header from '../../components/header'
 import styles from './styles'
 import { Checkbox, TextInput } from 'react-native-paper'
 import IconIon from 'react-native-vector-icons/Ionicons'
-import { RectButton } from 'react-native-gesture-handler'
+import { RectButton, ScrollView } from 'react-native-gesture-handler'
 // import { TextInput } from 'react-native-paper'
 import TaskCard from '../../components/taskCard'
 import { useEffect, useState } from 'react'
@@ -39,7 +39,7 @@ export default function Home(): React.JSX.Element {
   const [newTaskModaIsOpen, setNewTaskModalIsOpen] = useState<boolean>(false)
   const [newTaskTitle, setNewTaskTitle] = useState<string>('')
 
-  function handleToggleCheck(idTask: number): void {
+  async function handleToggleCheck(idTask: number): Promise<void> {
     // cria uma nova lista de tasks (conceito de imutabilidade)
     const newTasks = tasks.map((task) => {
       // verifica se a task atual é a task que foi clicada
@@ -56,6 +56,9 @@ export default function Home(): React.JSX.Element {
     )
     // atualiza o estado de tasks com a nova lista
     setTasks(newTasks)
+
+    // atualiza o estado do async storage
+    await AsyncStorage.setItem('mtasks:tasks', JSON.stringify(newTasks))
   }
 
   // muda a ordenação das tasks entre data e prioridade maior e menor
@@ -115,8 +118,6 @@ export default function Home(): React.JSX.Element {
     setTasks(newTasks)
   }
 
-  // função para alterar filtro
-
   // função que é chamada quando a página é carregada
   useEffect(() => {
     // busca as tasks atuais de storage
@@ -135,7 +136,7 @@ export default function Home(): React.JSX.Element {
   }, [])
 
   return (
-    <>
+    <ScrollView >
       {/* modal de nova tarefa */}
       <NewTaskModal
         newTaskModaIsOpen={newTaskModaIsOpen}
@@ -202,13 +203,13 @@ export default function Home(): React.JSX.Element {
               return null
             }
             return (<TaskCard key={task.id} {...task} onToggleCheck={() => {
-              handleToggleCheck(task.id)
+              void handleToggleCheck(task.id)
             }}
             onPress={() => {}}
             />)
           })}
         </View>
       </View>
-    </>
+    </ScrollView>
   )
 }

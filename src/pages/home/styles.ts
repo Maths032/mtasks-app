@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
   // container lista de tarefas
   taskListContainer: {
     width: '95%',
-    height: '100%'
+    height: '100%',
+    paddingBottom: 20
     // backgroundColor: 'red'
   }
 })

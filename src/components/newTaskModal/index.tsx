@@ -39,9 +39,14 @@ export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, ta
   // função para alterar o foco do input
   function changeFocus(): void {
     // verifica se o titulo está preenchido e se o input de descrição não está focado
-    if (title.value !== '' && descInputRef.current !== null && !descInputRef.current.isFocused()) {
+    if (descInputRef.current !== null && !descInputRef.current.isFocused()) {
       descInputRef.current.focus()
     }
+    // // se o titulo não estiver preenchido, acusa erro e prenive a mudança de foco
+    // if (title.value === '' ) {
+    //   setTitle({ ...title, error: 'Campo obrigatório' })
+    // }
+
     // se o titulo e a descrição estiverem preenchidos, exibe o datetimepicker
     if (description.value !== '' && title.value !== '') {
       setDatePickerVisibility(true)
