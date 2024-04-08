@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import NewTaskModal from '../../components/newTaskModal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
+import EditTaskModal from '../../components/editTaksModal'
 
 interface TaskProps {
   id: number
@@ -38,6 +39,10 @@ export default function Home(): React.JSX.Element {
   // estado para abrir e fechar o modal de nova tarefa
   const [newTaskModaIsOpen, setNewTaskModalIsOpen] = useState<boolean>(false)
   const [newTaskTitle, setNewTaskTitle] = useState<string>('')
+
+  // estados para abrir e fechar o modal de edição e exclusao
+  const [editTaskModalIsOpen, setEditTaskModalIsOpen] = useState<boolean>(false)
+  const [taskToEdit, setTaskToEdit] = useState<TaskProps | null>(null)
 
   async function handleToggleCheck(idTask: number): Promise<void> {
     // cria uma nova lista de tasks (conceito de imutabilidade)
@@ -118,8 +123,8 @@ export default function Home(): React.JSX.Element {
     setTasks(newTasks)
   }
 
-  // função que é chamada quando a página é carregada
-  useEffect(() => {
+  // função que faz o refresh das tasks
+  function refreshTasks(): void {
     // busca as tasks atuais de storage
     AsyncStorage.getItem('mtasks:tasks').then((tasksSaved) => {
       // verifica se já existe tasks
@@ -133,6 +138,24 @@ export default function Home(): React.JSX.Element {
     ).catch((error) => {
       console.error('error', error)
     })
+  }
+
+  // função que é chamada quando a página é carregada
+  useEffect(() => {
+    // // busca as tasks atuais de storage
+    // AsyncStorage.getItem('mtasks:tasks').then((tasksSaved) => {
+    //   // verifica se já existe tasks
+    //   if (tasksSaved !== null) {
+    //     // se existir, converte para array
+    //     const tasksArray = JSON.parse(tasksSaved)
+    //     // atualiza o estado de tasks com as tasks do storage
+    //     setTasks([...tasksArray])
+    //   }
+    // }
+    // ).catch((error) => {
+    //   console.error('error', error)
+    // })
+    refreshTasks()
   }, [])
 
   return (
@@ -151,6 +174,20 @@ export default function Home(): React.JSX.Element {
         }}
         taskTitle={newTaskTitle}
       />
+
+      <EditTaskModal
+        task={taskToEdit ?? null}
+        editTaskModalIsOpen={editTaskModalIsOpen}
+        onClose={() => {
+          setEditTaskModalIsOpen(!editTaskModalIsOpen)
+          setTaskToEdit(null)
+        }}
+        onUpdateOrDelete={(task) => {
+          refreshTasks()
+          // setTasks(newTasks)
+          setEditTaskModalIsOpen(false)
+          setTaskToEdit(null)
+        }}/>
       {/* importando header */}
       <Header />
 
@@ -205,7 +242,10 @@ export default function Home(): React.JSX.Element {
             return (<TaskCard key={task.id} {...task} onToggleCheck={() => {
               void handleToggleCheck(task.id)
             }}
-            onPress={() => {}}
+            onPress={() => {
+              setTaskToEdit(task)
+              setEditTaskModalIsOpen(true)
+            }}
             />)
           })}
         </View>
