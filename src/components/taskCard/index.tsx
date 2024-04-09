@@ -30,11 +30,14 @@ export default function TaskCard({
       key={id}
       style={[
         styles.taskContainer,
-        { backgroundColor: completed ? '#d4edda' : priority ? '#f8d7da' : '#fff' }
+        {
+          backgroundColor: completed ? '#d4edda' : priority ? '#f8d7da' : '#fff'
+        }
       ]}
     >
       {/* container com checkbox */}
-      <View style={styles.taskContainerSectionOne}
+      <View
+        style={styles.taskContainerSectionOne}
 
         // onTouchStart={onToggleCheck}
       >
@@ -44,12 +47,14 @@ export default function TaskCard({
             onToggleCheck(id)
           }}
         />
-
       </View>
       {/* container com titulo e desc */}
-      <View style={styles.taskContainerSectionTwo} onTouchEnd={() => {
-        onPress(id)
-      }}>
+      <View
+        style={styles.taskContainerSectionTwo}
+        onTouchEnd={() => {
+          onPress(id)
+        }}
+      >
         <Text numberOfLines={1} style={styles.taskTitleText}>
           {title}
         </Text>

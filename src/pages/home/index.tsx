@@ -58,8 +58,7 @@ export default function Home(): React.JSX.Element {
       }
       // retorna a task sem alterações
       return task
-    }
-    )
+    })
     // atualiza o estado de tasks com a nova lista
     setTasks(newTasks)
 
@@ -108,10 +107,16 @@ export default function Home(): React.JSX.Element {
         // verifica se a ordenação é ascendente
         if (parsedOrder.order === 'asc') {
           // retorna a diferença entre as datas, para ordenar de forma ascendente
-          return moment(a.createdAt).toDate().getTime() - moment(b?.createdAt).toDate().getTime()
+          return (
+            moment(a.createdAt).toDate().getTime() -
+            moment(b?.createdAt).toDate().getTime()
+          )
         } else {
           // retorna a diferença entre as datas
-          return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
+          return (
+            moment(b.createdAt).toDate().getTime() -
+            moment(a.createdAt).toDate().getTime()
+          )
         }
       }
       if (parsedOrder.type === 'priority') {
@@ -136,18 +141,19 @@ export default function Home(): React.JSX.Element {
   // função que faz o refresh das tasks
   function refreshTasks(): void {
     // busca as tasks atuais de storage
-    AsyncStorage.getItem('mtasks:tasks').then((tasksSaved) => {
-      // verifica se já existe tasks
-      if (tasksSaved !== null) {
-        // se existir, converte para array
-        const tasksArray = JSON.parse(tasksSaved)
-        // atualiza o estado de tasks com as tasks do storage
-        setTasks([...tasksArray])
-      }
-    }
-    ).catch((error) => {
-      console.error('error', error)
-    })
+    AsyncStorage.getItem('mtasks:tasks')
+      .then((tasksSaved) => {
+        // verifica se já existe tasks
+        if (tasksSaved !== null) {
+          // se existir, converte para array
+          const tasksArray = JSON.parse(tasksSaved)
+          // atualiza o estado de tasks com as tasks do storage
+          setTasks([...tasksArray])
+        }
+      })
+      .catch((error) => {
+        console.error('error', error)
+      })
   }
 
   // função que é chamada quando a página é carregada
@@ -166,7 +172,7 @@ export default function Home(): React.JSX.Element {
   }, [order])
 
   return (
-    <ScrollView >
+    <ScrollView>
       {/* modal de nova tarefa */}
       <NewTaskModal
         newTaskModaIsOpen={newTaskModaIsOpen}
@@ -194,7 +200,8 @@ export default function Home(): React.JSX.Element {
           // setTasks(newTasks)
           setEditTaskModalIsOpen(false)
           setTaskToEdit(null)
-        }}/>
+        }}
+      />
       {/* importando header */}
       <Header />
 
@@ -205,12 +212,22 @@ export default function Home(): React.JSX.Element {
             style={styles.textInput}
             mode="outlined"
             label="Digite aqui para criar uma tarefa"
-            right={<TextInput.Icon icon={'send'} onPress={() => { setNewTaskModalIsOpen(true) }} />}
+            right={
+              <TextInput.Icon
+                icon={'send'}
+                onPress={() => {
+                  setNewTaskModalIsOpen(true)
+                }}
+              />
+            }
             value={newTaskTitle}
-            onChangeText={(text) => { setNewTaskTitle(text) }}
-            enterKeyHint='send'
-            onSubmitEditing={() => { setNewTaskModalIsOpen(true) }}
-
+            onChangeText={(text) => {
+              setNewTaskTitle(text)
+            }}
+            enterKeyHint="send"
+            onSubmitEditing={() => {
+              setNewTaskModalIsOpen(true)
+            }}
           />
         </View>
 
@@ -219,22 +236,33 @@ export default function Home(): React.JSX.Element {
           {/* botão de ordenação */}
           <RectButton
             style={styles.orderButton}
-
-            onPress={() => { toggleOrder() }}
+            onPress={() => {
+              toggleOrder()
+            }}
           >
-            <Text style={styles.orderButtonText}>Ordenando por
-            {order.type === 'date' ? ' data' : ' prioridade'}
+            <Text style={styles.orderButtonText}>
+              Ordenando por
+              {order.type === 'date' ? ' data' : ' prioridade'}
             </Text>
             <IconIon
               style={styles.orderButtonIcon}
-              name={order.order === 'asc' ? 'caret-up-outline' : 'caret-down-outline'}
+              name={
+                order.order === 'asc'
+                  ? 'caret-up-outline'
+                  : 'caret-down-outline'
+              }
               size={20}
               color="#595959"
             />
           </RectButton>
 
           {/* botão filtro */}
-          <View style={styles.filterButton} onTouchEnd={() => { setShowCompleted(!showCompleted) }}>
+          <View
+            style={styles.filterButton}
+            onTouchEnd={() => {
+              setShowCompleted(!showCompleted)
+            }}
+          >
             <Checkbox status={showCompleted ? 'unchecked' : 'checked'} />
             <Text style={styles.filterButtonText}>Mostrar concluídas</Text>
           </View>
@@ -246,14 +274,19 @@ export default function Home(): React.JSX.Element {
             if (showCompleted && task.completed) {
               return null
             }
-            return (<TaskCard key={task.id} {...task} onToggleCheck={() => {
-              void handleToggleCheck(task.id)
-            }}
-            onPress={() => {
-              setTaskToEdit(task)
-              setEditTaskModalIsOpen(true)
-            }}
-            />)
+            return (
+              <TaskCard
+                key={task.id}
+                {...task}
+                onToggleCheck={() => {
+                  void handleToggleCheck(task.id)
+                }}
+                onPress={() => {
+                  setTaskToEdit(task)
+                  setEditTaskModalIsOpen(true)
+                }}
+              />
+            )
           })}
         </View>
       </View>

@@ -1,4 +1,10 @@
-import { Keyboard, Modal, Text, View, type TextInput as TextInputProp } from 'react-native'
+import {
+  Keyboard,
+  Modal,
+  Text,
+  View,
+  type TextInput as TextInputProp
+} from 'react-native'
 // import Modal from 'react-native-modal'
 import styles from './styles'
 import { Button, Checkbox, TextInput } from 'react-native-paper'
@@ -24,14 +30,29 @@ interface NewTaskModalProps {
   onCreated: (task: TaskProps) => void
 }
 
-export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, taskTitle }: NewTaskModalProps): React.JSX.Element {
+export default function NewTaskModal({
+  newTaskModaIsOpen,
+  onClose,
+  onCreated,
+  taskTitle
+}: NewTaskModalProps): React.JSX.Element {
   // estado do modal de datetime
-  const [isDatePickerVisible, setDatePickerVisibility] = useState<boolean>(false)
+  const [isDatePickerVisible, setDatePickerVisibility] =
+    useState<boolean>(false)
 
   // estados para armazenar erro e valor de cada um dos inputs
-  const [title, setTitle] = useState<{ value: string, error: string }>({ value: '', error: '' })
-  const [description, setDescription] = useState<{ value: string, error: string }>({ value: '', error: '' })
-  const [dateForEnd, setDateForEnd] = useState<{ value: string, error: string }>({ value: '', error: '' })
+  const [title, setTitle] = useState<{ value: string, error: string }>({
+    value: '',
+    error: ''
+  })
+  const [description, setDescription] = useState<{
+    value: string
+    error: string
+  }>({ value: '', error: '' })
+  const [dateForEnd, setDateForEnd] = useState<{
+    value: string
+    error: string
+  }>({ value: '', error: '' })
   const [priority, setPriority] = useState<boolean>(false)
 
   // referencia para o input de descrição para focar quando pressionar enter e caso o titulo esteja preenchido foca assim que o modal abre
@@ -150,107 +171,126 @@ export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, ta
   }, [newTaskModaIsOpen])
 
   return (
-  // <>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                style={styles.modalBody}
-                visible={newTaskModaIsOpen}
-                onRequestClose={() => {
-                  onClose()
-                }}
-                onDismiss={() => {
-                  onClose()
-                }}
-            >
-                {/* view usada apenas para escurecer o background e dar funcionalidade de fechar */}
-                <View
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.2)',
-                  height: '50%'
-                }}
-                 onTouchEnd={() => { onClose() }}
-                />
-                <View style={styles.modalBody}>
-                <Text style={styles.textTitle}>Criando nova tarefa</Text>
-                    <TextInput
-                        defaultValue={taskTitle}
-                        style={styles.inputTitle}
-                        label="Titulo da tarefa*"
-                        mode='outlined'
-                        maxLength={40}
-                        value={title.value}
-                        // keyboardType='default'
-                        enterKeyHint='next'
-                        onSubmitEditing={() => { changeFocus() }}
-                        onChangeText={(v) => {
-                          setTitle({ error: '', value: v })
-                        }}
-                        error={title.error !== ''}
-                    />
+    // <>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      style={styles.modalBody}
+      visible={newTaskModaIsOpen}
+      onRequestClose={() => {
+        onClose()
+      }}
+      onDismiss={() => {
+        onClose()
+      }}
+    >
+      {/* view usada apenas para escurecer o background e dar funcionalidade de fechar */}
+      <View
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.2)',
+          height: '50%'
+        }}
+        onTouchEnd={() => {
+          onClose()
+        }}
+      />
+      <View style={styles.modalBody}>
+        <Text style={styles.textTitle}>Criando nova tarefa</Text>
+        <TextInput
+          defaultValue={taskTitle}
+          style={styles.inputTitle}
+          label="Titulo da tarefa*"
+          mode="outlined"
+          maxLength={40}
+          value={title.value}
+          // keyboardType='default'
+          enterKeyHint="next"
+          onSubmitEditing={() => {
+            changeFocus()
+          }}
+          onChangeText={(v) => {
+            setTitle({ error: '', value: v })
+          }}
+          error={title.error !== ''}
+        />
 
-                    <TextInput
-                        style={styles.inputDesc}
-                        label="Descrição da tarefa*"
-                        mode='outlined'
-                        maxLength={200}
-                        ref={descInputRef}
-                        value={description.value}
-                        enterKeyHint='next'
-                        onSubmitEditing={() => { changeFocus() }}
-                        onChangeText={(v) => {
-                          setDescription({ error: '', value: v })
-                        }}
-                        error={description.error !== ''}
-                    />
+        <TextInput
+          style={styles.inputDesc}
+          label="Descrição da tarefa*"
+          mode="outlined"
+          maxLength={200}
+          ref={descInputRef}
+          value={description.value}
+          enterKeyHint="next"
+          onSubmitEditing={() => {
+            changeFocus()
+          }}
+          onChangeText={(v) => {
+            setDescription({ error: '', value: v })
+          }}
+          error={description.error !== ''}
+        />
 
-                    <View
-                        onTouchStart={showDatePicker}
-                        style={{ zIndex: 999, width: '100%' }}
+        <View
+          onTouchStart={showDatePicker}
+          style={{ zIndex: 999, width: '100%' }}
+        >
+          <TextInput
+            // disabled
+            // onTouchStart={showDatePicker}
+            value={dateForEnd.value}
+            style={styles.inputDate}
+            label="Data limite para termino*"
+            mode="outlined"
+            keyboardType="numeric"
+            onChangeText={() => {}}
+            onFocus={() => {
+              showDatePicker()
+            }}
+            error={dateForEnd.error !== ''}
+          />
+          {/* <Text>sdasd</Text> */}
+        </View>
+        <DateTimePickerModal
+          // value={'2021-09-01 00:00:00'}
+          onCancel={handleCancelDatePicker}
+          onConfirm={handleConfirmDatePicker}
+          isVisible={isDatePickerVisible}
+          mode="datetime"
+        />
+        <View
+          style={styles.priorityCheck}
+          onTouchEnd={() => {
+            setPriority(!priority)
+          }}
+        >
+          <Checkbox status={priority ? 'checked' : 'unchecked'} />
+          <Text style={styles.priorityCheckText}>Prioridade</Text>
+        </View>
 
-                    >
-                        <TextInput
-                            // disabled
-                            // onTouchStart={showDatePicker}
-                            value={dateForEnd.value}
-                            style={styles.inputDate}
-                            label="Data limite para termino*"
-                            mode='outlined'
-                            keyboardType='numeric'
-                            onChangeText={() => { }}
-                            onFocus={() => { showDatePicker() }}
-                            error={dateForEnd.error !== ''}
-                        />
-                        {/* <Text>sdasd</Text> */}
-                    </View>
-                   <DateTimePickerModal
-                        // value={'2021-09-01 00:00:00'}
-                        onCancel={handleCancelDatePicker}
-                        onConfirm={handleConfirmDatePicker}
-                        isVisible={isDatePickerVisible}
-                        mode='datetime'
-                    />
-                    <View style={styles.priorityCheck} onTouchEnd={() => { setPriority(!priority) }}>
-                        <Checkbox status={priority ? 'checked' : 'unchecked'} />
-                        <Text style={styles.priorityCheckText}>Prioridade</Text>
-                    </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            mode="contained"
+            style={styles.saveButton}
+            onPress={() => {
+              void handleCreate()
+            }}
+          >
+            Criar tarefa
+          </Button>
 
-                    <View style={styles.buttonContainer}>
-                        <Button mode='contained'
-                        style={styles.saveButton}
-
-                         onPress={() => { void handleCreate() }}>
-                            Criar tarefa
-                        </Button>
-
-                        <Button mode='outlined'
-                        style={styles.cancelButton}
-                         onPress={() => { handleCancel() }}>
-                            Cancelar
-                        </Button>
-                    </View>
-                </View>
-            </Modal>
-  // </>
+          <Button
+            mode="outlined"
+            style={styles.cancelButton}
+            onPress={() => {
+              handleCancel()
+            }}
+          >
+            Cancelar
+          </Button>
+        </View>
+      </View>
+    </Modal>
+    // </>
   )
 }

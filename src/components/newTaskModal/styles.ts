@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
-
   modalBody: {
     borderRadius: 10,
     backgroundColor: '#fff',
@@ -86,7 +85,6 @@ const styles = StyleSheet.create({
     color: '#110982',
     height: 60,
     justifyContent: 'center'
-
   }
 })
 
