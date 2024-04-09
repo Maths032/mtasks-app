@@ -2,6 +2,14 @@
 
 Aplicativo desenvolvido utilizando React Native + Expo para organizar tarefas, permitindo a criação, edição e acompanhamento de tarefas de uma maneira rápida e intuitiva.
 
+## Links úteis
+
+ - [Apresentação do App em vídeo](https://youtu.be/TAzwt-xrccg)
+ - [Link no Snack](https://snack.expo.dev/@maths32/github.com-maths032-mtasks-app?platform=android)
+ - QR code para executar diretamente a partir do [aplicativo oficial do expo](https://play.google.com/store/apps/details?id=host.exp.exponent&hl=pt_BR&gl=US).
+
+    ![image](https://github.com/Maths032/mtasks-app/assets/59992334/a91f78fc-f413-429c-8171-2dcf0a380add)
+
 
 ## Principais tecnologias utilizadas
  - React Native
