@@ -33,7 +33,7 @@ Aplicativo desenvolvido utilizando React Native + Expo para organizar tarefas, p
   2. Após a instalação das dependências, execute `npm run start` ou `yarn start` para começar a executar o processo.
   3. O terminal vai exibir um QR code, a partir deste momento, basta baixar o aplicativo Expo GO da Google Play, conectar o aparelho celular na mesma rede que o computador hospedeiro e ler o QR code exibido no terminal.
 
-##Observações
+## Observações
  - Caso o aparelho celular que vai rodar a aplicação não esteja na mesma rede local, ainda é possível testar o App seguindo as instruções deste link: [https://docs.expo.dev/more/expo-cli/#server-url](https://docs.expo.dev/more/expo-cli/#server-url)
  - É recomendado o uso de aparelhos android para teste.
     
