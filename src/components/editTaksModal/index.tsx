@@ -14,6 +14,7 @@ interface TaskProps {
   dateForEnd: Date
   completed: boolean
   priority: boolean
+  createdAt: Date
 }
 
 interface EditTaskModalProps {
@@ -128,7 +129,7 @@ export default function EditTaskModal({ editTaskModalIsOpen, onClose, onUpdateOr
     if (editTaskModalIsOpen && task !== undefined && task !== null) {
       setTitle({ value: task.title, error: '' })
       setDescription({ value: task.description, error: '' })
-      setDateForEnd({ value: moment(task.dateForEnd).format('DD/MM/YYY HH:mm'), error: '' })
+      setDateForEnd({ value: moment(task.dateForEnd).format('DD/MM/YYYY HH:mm'), error: '' })
       setPriority(task.priority)
       changeFocus()
     } else {
@@ -204,7 +205,7 @@ export default function EditTaskModal({ editTaskModalIsOpen, onClose, onUpdateOr
                             // onTouchStart={showDatePicker}
                             value={dateForEnd.value}
                             style={styles.inputDate}
-                            label="Data de entrega*"
+                            label="Data limite para termino*"
                             mode='outlined'
                             keyboardType='numeric'
                             onChangeText={() => { }}

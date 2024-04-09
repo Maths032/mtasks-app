@@ -11,9 +11,10 @@ interface TaskProps {
   id: number
   title: string
   description: string
-  dateForEnd: Date
   completed: boolean
   priority: boolean
+  dateForEnd: Date
+  createdAt: Date
 }
 
 interface NewTaskModalProps {
@@ -82,7 +83,8 @@ export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, ta
         description: description.value,
         dateForEnd: moment(dateForEnd.value, 'DD/MM/YYYY HH:mm').toDate(),
         completed: false,
-        priority
+        priority,
+        createdAt: new Date()
       }
 
       // adiciona a nova task
@@ -100,7 +102,8 @@ export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, ta
         description: description.value,
         dateForEnd: moment(dateForEnd.value, 'DD/MM/YYYY HH:mm').toDate(),
         completed: false,
-        priority
+        priority,
+        createdAt: new Date()
       }
 
       await AsyncStorage.setItem('mtasks:tasks', JSON.stringify([newTask]))
@@ -211,7 +214,7 @@ export default function NewTaskModal({ newTaskModaIsOpen, onClose, onCreated, ta
                             // onTouchStart={showDatePicker}
                             value={dateForEnd.value}
                             style={styles.inputDate}
-                            label="Data de entrega*"
+                            label="Data limite para termino*"
                             mode='outlined'
                             keyboardType='numeric'
                             onChangeText={() => { }}

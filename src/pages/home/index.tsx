@@ -19,6 +19,7 @@ interface TaskProps {
   dateForEnd: Date
   completed: boolean
   priority: boolean
+  createdAt: Date
 }
 
 interface OrderProps {
@@ -69,47 +70,53 @@ export default function Home(): React.JSX.Element {
   // muda a ordenação das tasks entre data e prioridade maior e menor
   function toggleOrder(): void {
     // verifica se a ordenação atual é por data e se é ascendente
+    const newOrder: OrderProps = {
+      type: 'date',
+      order: 'asc'
+    }
+    // se for date asc, muda para date desc
     if (order.type === 'date' && order.order === 'asc') {
-      // atualiza o estado de order para data descendente
-      setOrder({
-        type: 'date',
-        order: 'desc'
-      })
-    } else if (order.type === 'date' && order.order === 'desc') {
-      // atualiza o estado de order para prioridade ascendente
-      setOrder({
-        type: 'priority',
-        order: 'asc'
-      })
-    } else if (order.type === 'priority' && order.order === 'asc') {
-      // atualiza o estado de order para prioridade descendente
-      setOrder({
-        type: 'priority',
-        order: 'desc'
-      })
-    } else {
-      // atualiza o estado de order para data ascendente
-      setOrder({
-        type: 'date',
-        order: 'asc'
-      })
+      newOrder.type = 'date'
+      newOrder.order = 'desc'
+    }
+    // se for date desc, muda para priority asc
+    if (order.type === 'date' && order.order === 'desc') {
+      newOrder.type = 'priority'
+      newOrder.order = 'asc'
+    }
+    // se for priority asc, muda para priority desc
+    if (order.type === 'priority' && order.order === 'asc') {
+      newOrder.type = 'priority'
+      newOrder.order = 'desc'
+    }
+    // se for priority desc, muda para date asc
+    if (order.type === 'priority' && order.order === 'desc') {
+      newOrder.type = 'date'
+      newOrder.order = 'asc'
     }
 
+    setOrder(newOrder)
+    orderTasks(newOrder)
+  }
+
+  // de fato realiza a ordenação das tasks
+  function orderTasks(parsedOrder: OrderProps): void {
     // cria uma nova lista de tasks com a ordenação atual
     const newTasks = tasks.sort((a, b) => {
       // verifica se a ordenação é por data
-      if (order.type === 'date') {
+      if (parsedOrder.type === 'date') {
         // verifica se a ordenação é ascendente
-        if (order.order === 'asc') {
+        if (parsedOrder.order === 'asc') {
           // retorna a diferença entre as datas, para ordenar de forma ascendente
-          return moment(a.dateForEnd).toDate().getTime() - moment(b?.dateForEnd).toDate().getTime()
+          return moment(a.createdAt).toDate().getTime() - moment(b?.createdAt).toDate().getTime()
         } else {
           // retorna a diferença entre as datas
-          return moment(b.dateForEnd).toDate().getTime() - moment(a.dateForEnd).toDate().getTime()
+          return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
         }
-      } else {
+      }
+      if (parsedOrder.type === 'priority') {
         // verifica se a ordenação é ascendente
-        if (order.order === 'asc') {
+        if (parsedOrder.order === 'asc') {
           // retorna a diferença entre as prioridades
           return Number(a.priority) - Number(b.priority)
         } else {
@@ -117,6 +124,9 @@ export default function Home(): React.JSX.Element {
           return Number(b.priority) - Number(a.priority)
         }
       }
+
+      // retorna 0 se as tarefas forem iguais
+      return 0
     })
 
     // atualiza o estado de tasks com a nova lista
@@ -143,20 +153,17 @@ export default function Home(): React.JSX.Element {
   // função que é chamada quando a página é carregada
   useEffect(() => {
     // // busca as tasks atuais de storage
-    // AsyncStorage.getItem('mtasks:tasks').then((tasksSaved) => {
-    //   // verifica se já existe tasks
-    //   if (tasksSaved !== null) {
-    //     // se existir, converte para array
-    //     const tasksArray = JSON.parse(tasksSaved)
-    //     // atualiza o estado de tasks com as tasks do storage
-    //     setTasks([...tasksArray])
-    //   }
-    // }
-    // ).catch((error) => {
-    //   console.error('error', error)
-    // })
+
     refreshTasks()
+    orderTasks(order)
   }, [])
+
+  // função que é chamada toda vez que o estado de order é alterado
+  useEffect(() => {
+    // ordena as tasks
+
+    orderTasks(order)
+  }, [order])
 
   return (
     <ScrollView >
@@ -182,7 +189,7 @@ export default function Home(): React.JSX.Element {
           setEditTaskModalIsOpen(!editTaskModalIsOpen)
           setTaskToEdit(null)
         }}
-        onUpdateOrDelete={(task) => {
+        onUpdateOrDelete={() => {
           refreshTasks()
           // setTasks(newTasks)
           setEditTaskModalIsOpen(false)

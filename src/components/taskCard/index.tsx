@@ -9,6 +9,7 @@ interface TaskCardProps {
   dateForEnd: Date
   completed: boolean
   priority: boolean
+  createdAt: Date
   onPress: (id: number) => void
   onToggleCheck: (id: number) => void
 }
@@ -21,7 +22,8 @@ export default function TaskCard({
   completed,
   priority,
   onToggleCheck,
-  onPress
+  onPress,
+  createdAt
 }: TaskCardProps): React.JSX.Element {
   return (
     <View
@@ -42,6 +44,7 @@ export default function TaskCard({
             onToggleCheck(id)
           }}
         />
+
       </View>
       {/* container com titulo e desc */}
       <View style={styles.taskContainerSectionTwo} onTouchEnd={() => {
@@ -54,7 +57,7 @@ export default function TaskCard({
           {description}
         </Text>
         <Text style={styles.taskCreatedDateText}>
-          {moment(dateForEnd).format('[até] DD/MM [as] HH:mm')}
+          Criada {moment(createdAt).format('DD/MM [as] HH:mm')}
         </Text>
       </View>
     </View>
