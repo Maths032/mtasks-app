@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     marginLeft: '-15%',
     alignItems: 'center',
     textAlign: 'center',
-
     fontFamily: 'Poppins_500Medium',
     fontSize: 16,
     // impede quebra de linha sem whitespace
@@ -57,6 +56,7 @@ const styles = StyleSheet.create({
     maxHeight: 40
   },
 
+  // texto da descrição da tarefa
   taskDescText: {
     marginLeft: '-15%',
     textAlign: 'center',
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     color: '#595959'
   },
 
+  // seção 3 do container de tarefa (data de criação)
   taskCreatedDateText: {
     fontFamily: 'Poppins_400Regular',
     fontSize: 12,
